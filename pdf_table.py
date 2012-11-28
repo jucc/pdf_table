@@ -33,15 +33,19 @@ def get_page_text(page):
     text_blocks = filter(lambda x: isinstance(x, LTTextBox) or isinstance(x, LTTextLine), page_elements)
     return [line for block in text_blocks for line in block]
 
-def compose_lines(text):
+def compose_lines(text, avg_line_height):
     lines = {}
     for block in text:
         found = False
         for l in lines:
-            if abs(l - block.y0) < 10:
-                lines[l].append(block)
+            if abs(l - block.y0) < avg_line_height * 0.8:
                 found = True
-
+                lines[l].append(block)
+                #adjust dict key to the average y0
+                i = len(lines[l])
+                new_key = (l * (i-1) + block.y0) / i
+                lines[new_key] = lines.pop(l)
+                break    
         if not found:
             lines[block.y0] = [block]
     return lines
@@ -57,7 +61,9 @@ if __name__ == "__main__":
 #        if 435 <= block.x0 and block.x0  <= 448:
 #        if block.y0 > 240 and block.y0 < 242:
 #            print "[%s][w=%03f]: %s" % (block.x0, block.x1 - block.x0, block.get_text())
-    lines = compose_lines(text)
-    for line_number in sorted(lines.keys()):
-        print line_number
-    print "%s linhas" % (len(lines))
+    lines = compose_lines(text, 10.5)
+    for line_number in sorted(lines.keys(), reverse=True):
+        print "[%s]" % line_number
+        for cell in lines[line_number]:
+            print cell.get_text()
+    print "Total: %s linhas" % (len(lines))
