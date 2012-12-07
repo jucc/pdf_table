@@ -43,6 +43,16 @@ def update_line(lines, l, block):
     lines[l].append(block)
     new_key = (l * i + block.y0) / (i + 1)
     lines[new_key] = lines.pop(l)
+
+def update_col(cols, c, block):    
+    """
+        appends a text block to a line and updates the dict key so that it contains 
+        the average of y0 values for all its elements
+    """
+    i = len(cols[c])
+    lines[c].append(block)
+    new_key = (c * i + block.x0) / (i + 1)
+    lines[new_key] = lines.pop(c)
     
 def compose_lines(text, avg_line_height):
     lines = {}
@@ -55,16 +65,40 @@ def compose_lines(text, avg_line_height):
             lines[block.y0] = [block]
     return lines
 
-def break_columns(lines):
-    pass
+def break_columns(text, avg_col_width):
+    cols = {}
+    for block in text:
+        for c in cols:
+            if abs(c - block.x0) < avg_col_width * 0.8:
+                cols[c].append(block)
+                break
+        else:
+            cols[block.x0] = [block]
+    return cols
+
+def strip_metadata(text):
+    """
+    Works only for UERJ grade template specific pdf
+    """
+    contains = lambda bl, tx: bl.get_text().find(tx) != -1
+    not_meta = lambda b: not (contains(b, '/') or contains(b, ':') or contains(b, 'Exame Discursivo') or contains(b, 'Nome do Candidato'))
+    return filter(not_meta, text)
 
 if __name__ == "__main__":
     pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
     page = pages.next() # for i, page in enumerate(pages):
-    text = get_page_text(page)
+    text = strip_metadata(get_page_text(page))
+
     lines = compose_lines(text, 10.5)
     for line_number in sorted(lines.keys(), reverse=True):
         print "[%s]" % line_number
         for cell in lines[line_number]:
             print cell.get_text()
     print "Total: %s linhas" % (len(lines))
+    
+    cols = break_columns(text, 20)
+    for col_number in sorted(cols.keys()):
+        print "[%s]" % col_number
+        for cell in cols[col_number]:
+            print cell.get_text()
+    print "Total: %s colunas" % (len(cols))     
