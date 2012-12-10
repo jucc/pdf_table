@@ -34,43 +34,34 @@ def get_page_text(page):
     text_blocks = filter(istext, page_elements)
     return [line for block in text_blocks for line in block]
 
-def update_line(lines, l, block):    
+def update_key(dic, old_key, new_key):    
     """
         appends a text block to a line and updates the dict key so that it contains 
         the average of y0 values for all its elements
     """
-    i = len(lines[l])
-    lines[l].append(block)
-    new_key = (l * i + block.y0) / (i + 1)
-    lines[new_key] = lines.pop(l)
+    i = len(dic[old_key])
+    avg_key = ((i - 1) * old_key + new_key) / i
+    dic[avg_key] = dic.pop(old_key)
 
-def update_col(cols, c, block):    
-    """
-        appends a text block to a line and updates the dict key so that it contains 
-        the average of y0 values for all its elements
-    """
-    i = len(cols[c])
-    lines[c].append(block)
-    new_key = (c * i + block.x0) / (i + 1)
-    lines[new_key] = lines.pop(c)
-    
 def compose_lines(text, avg_line_height):
     lines = {}
     for block in text:
         for l in lines:
             if abs(l - block.y0) < avg_line_height * 0.8:
-                update_line(lines, l, block)
+                lines[l].append(block)
+                update_key(lines, l, block.y0)
                 break
         else:
             lines[block.y0] = [block]
     return lines
 
-def break_columns(text, avg_col_width):
+def compose_columns(text, avg_col_width):
     cols = {}
     for block in text:
         for c in cols:
             if abs(c - block.x0) < avg_col_width * 0.8:
                 cols[c].append(block)
+                update_key(cols, c, block.x0)
                 break
         else:
             cols[block.x0] = [block]
@@ -89,16 +80,12 @@ if __name__ == "__main__":
     page = pages.next() # for i, page in enumerate(pages):
     text = strip_metadata(get_page_text(page))
 
-    lines = compose_lines(text, 10.5)
+    lines = compose_lines(text, 11.5)
     for line_number in sorted(lines.keys(), reverse=True):
-        print "[%s]" % line_number
-        for cell in lines[line_number]:
-            print cell.get_text()
+        print "[%.01f]" % line_number
     print "Total: %s linhas" % (len(lines))
     
-    cols = break_columns(text, 20)
+    cols = compose_columns(text, 26.5)
     for col_number in sorted(cols.keys()):
-        print "[%s]" % col_number
-        for cell in cols[col_number]:
-            print cell.get_text()
+        print "[%.01f]" % col_number
     print "Total: %s colunas" % (len(cols))     
