@@ -43,9 +43,13 @@ def update_key(dic, old_key, new_key):
     avg_key = ((i - 1) * old_key + new_key) / i
     dic[avg_key] = dic.pop(old_key)
 
-def compose_lines(text, avg_line_height):
+def compose_table(text, avg_line_height, avg_col_width):
     lines = {}
+    cols = {}
+
     for block in text:
+
+        # breaks the text in lines using avg y0
         for l in lines:
             if abs(l - block.y0) < avg_line_height * 0.8:
                 lines[l].append(block)
@@ -53,11 +57,8 @@ def compose_lines(text, avg_line_height):
                 break
         else:
             lines[block.y0] = [block]
-    return lines
-
-def compose_columns(text, avg_col_width):
-    cols = {}
-    for block in text:
+        
+        # breaks the text in cols using avg x0
         for c in cols:
             if abs(c - block.x0) < avg_col_width * 0.8:
                 cols[c].append(block)
@@ -65,7 +66,8 @@ def compose_columns(text, avg_col_width):
                 break
         else:
             cols[block.x0] = [block]
-    return cols
+
+    return lines, cols
 
 def strip_metadata(text):
     """
@@ -75,17 +77,16 @@ def strip_metadata(text):
     not_meta = lambda b: not (contains(b, '/') or contains(b, ':') or contains(b, 'Exame Discursivo') or contains(b, 'Nome do Candidato'))
     return filter(not_meta, text)
 
+
 if __name__ == "__main__":
     pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
     page = pages.next() # for i, page in enumerate(pages):
     text = strip_metadata(get_page_text(page))
 
-    lines = compose_lines(text, 11.5)
+    lines, cols  = compose_table(text, 11.5, 26.5)
     for line_number in sorted(lines.keys(), reverse=True):
         print "[%.01f]" % line_number
-    print "Total: %s linhas" % (len(lines))
-    
-    cols = compose_columns(text, 26.5)
+    print "Total: %s linhas" % (len(lines))    
     for col_number in sorted(cols.keys()):
         print "[%.01f]" % col_number
     print "Total: %s colunas" % (len(cols))     
