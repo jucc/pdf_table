@@ -81,6 +81,9 @@ def create_table(blocks, lines, cols):
         print "[%.01f]" % col
     return len(lines), len(cols)
 
+def get_grade(line, pesos):
+    pass
+
 if __name__ == "__main__":
     pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
     page = pages.next() # for i, page in enumerate(pages):

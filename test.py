@@ -4,6 +4,16 @@
 from pdf_table import *
 import unittest
 
+
+class Mock_block:
+    def __init__(self, x, y, tx):
+        self.x0 = x
+        self.y0 = y
+        self.text = tx
+
+    def getText(self):
+        return self.text
+
 class TestGetTableFromPdf(unittest.TestCase):
 
     def setUp(self):
@@ -30,5 +40,29 @@ class TestGetTableFromPdf(unittest.TestCase):
         self.assertEquals(63, len(blocks[0]))
         self.assertEquals(10, len(blocks[1]))
 
+    def test_convert_blocks_to_cells(self):
+        lines = [10, 20]
+        cols=[0, 10, 20, 30]
+        a = []
+        a.append(Mock_block(0, 10, 'ju'))
+        a.append(Mock_block(0, 20, 'ronald'))
+        a.append(Mock_block(10, 10, '9'))
+        a.append(Mock_block(10, 20, '10'))
+        a.append(Mock_block(20, 10, '7'))
+        a.append(Mock_block(30, 20, '8'))
+    
+        expected = [['ju', 9, 7, None], ['ronald', 10, None, 8]]
+        result = create_table(a, lines, cols)
+        self.assertEquals(expected, result)
+
+    def test_get_grade(self):
+        line = ['ju', 10, None, 9, 8, None, None]
+        pesos = {1:2, 3:1, 4:1}
+        expected = (10 * 2 + 9 + 8) / 4
+        result = get_grade(line, pesos)
+        self.assertEquals(expected, result)
+        
+
 if __name__ == '__main__':
     unittest.main()
+
