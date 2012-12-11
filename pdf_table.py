@@ -34,38 +34,32 @@ def get_text_elements(page):
     text_blocks = filter(istext, page_elements)
     return [line for block in text_blocks for line in block]
 
-def update_key(dic, old_key, new_key):
-    """
-        appends a text block to a line and updates the dict key so that it contains 
-        the average of y0 values for all its elements
-    """
-    i = len(dic[old_key])
-    avg_key = ((i - 1) * old_key + new_key) / i
-    dic[avg_key] = dic.pop(old_key)
+def belongs_to_partition(value, avg, partition_size):
+    return abs(value - avg) < partition_size * 0.5
+
+def update_average(old_avg, old_len,  new_value):
+    return (old_avg * old_len + new_value) / (old_len + 1)
 
 def find_blocks(text, avg_line_height, avg_col_width):
-    lines = {}
-    cols = {}
-
+    lines = []
+    cols = []
     for block in text:
 
-        # breaks the text in lines using avg y0
-        for l in lines:
-            if abs(l - block.y0) < avg_line_height * 0.8:
-                lines[l].append(block)
-                update_key(lines, l, block.y0)
+        for x_col in cols:
+            if belongs_to_partition(block.x0, x_col, avg_col_width):
+                x_col = update_average(x_col, len(cols) - 1, block.x0)
                 break
         else:
-            lines[block.y0] = [block]
-        
-        # breaks the text in cols using avg x0
-        for c in cols:
-            if abs(c - block.x0) < avg_col_width * 0.8:
-                cols[c].append(block)
-                update_key(cols, c, block.x0)
+            cols.append(block.x0)
+        cols.sort()
+
+        for y_line in lines:
+            if belongs_to_partition(block.y0, y_line, avg_line_height):
+                y_line = update_average(y_line, len(lines) - 1, block.y0)
                 break
         else:
-            cols[block.x0] = [block]
+            lines.append(block.y0)
+        lines.sort()
 
     return lines, cols
 
@@ -77,15 +71,18 @@ def strip_metadata(text):
     not_meta = lambda b: not (contains(b, '/') or contains(b, ':') or contains(b, 'Exame Discursivo') or contains(b, 'Nome do Candidato'))
     return filter(not_meta, text)
 
-def create_table(lines, cols):    
-    for line_number in sorted(lines.keys(), reverse=True):
+def create_table(blocks, lines, cols):    
+ 
+    for line_number in lines:
         print "[%.01f]" % line_number
-    for col_number in sorted(cols.keys()):
-        print "[%.01f]" % col_number
+    #       for cell in lines[line_number]:
+    #           print cell.get_text().encode('utf-8')
+    for col in cols:
+        print "[%.01f]" % col
     return len(lines), len(cols)
 
 if __name__ == "__main__":
     pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
     page = pages.next() # for i, page in enumerate(pages):
     text = strip_metadata(get_text_elements(page))
-    create_table(*find_blocks(text, 11.5, 26.5))
+    create_table(text, *find_blocks(text, 11.5, 26.5))

@@ -12,6 +12,17 @@ class TestGetTableFromPdf(unittest.TestCase):
     def test_doc_has_pages(self):
         self.assertIsNotNone(get_doc_pages(self.pdf))
 
+    def test_inside_partition(self):
+        self.assertTrue(belongs_to_partition(35, 42, 17))
+
+    def test_outside_partition(self):
+        self.assertFalse(belongs_to_partition(17, 42, 17))
+
+    def test_update_avg(self):
+        l = [17, 35, 14]
+        avg = sum(l) / len(l)
+        self.assertEquals(27, update_average(22, 3, 42))
+
     def test_find_blocks(self):
         pages = get_doc_pages(self.pdf)
         text = strip_metadata(get_text_elements(pages.next()))
