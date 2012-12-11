@@ -28,13 +28,13 @@ def get_page_elements(page):
     interpreter.process_page(page)
     return device.get_result()
 
-def get_page_text(page):
+def get_text_elements(page):
     page_elements = get_page_elements(page)
     istext = lambda el: isinstance(el, LTTextBox) or isinstance(el, LTTextLine)
     text_blocks = filter(istext, page_elements)
     return [line for block in text_blocks for line in block]
 
-def update_key(dic, old_key, new_key):    
+def update_key(dic, old_key, new_key):
     """
         appends a text block to a line and updates the dict key so that it contains 
         the average of y0 values for all its elements
@@ -43,7 +43,7 @@ def update_key(dic, old_key, new_key):
     avg_key = ((i - 1) * old_key + new_key) / i
     dic[avg_key] = dic.pop(old_key)
 
-def compose_table(text, avg_line_height, avg_col_width):
+def find_blocks(text, avg_line_height, avg_col_width):
     lines = {}
     cols = {}
 
@@ -77,16 +77,15 @@ def strip_metadata(text):
     not_meta = lambda b: not (contains(b, '/') or contains(b, ':') or contains(b, 'Exame Discursivo') or contains(b, 'Nome do Candidato'))
     return filter(not_meta, text)
 
+def create_table(lines, cols):    
+    for line_number in sorted(lines.keys(), reverse=True):
+        print "[%.01f]" % line_number
+    for col_number in sorted(cols.keys()):
+        print "[%.01f]" % col_number
+    return len(lines), len(cols)
 
 if __name__ == "__main__":
     pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
     page = pages.next() # for i, page in enumerate(pages):
-    text = strip_metadata(get_page_text(page))
-
-    lines, cols  = compose_table(text, 11.5, 26.5)
-    for line_number in sorted(lines.keys(), reverse=True):
-        print "[%.01f]" % line_number
-    print "Total: %s linhas" % (len(lines))    
-    for col_number in sorted(cols.keys()):
-        print "[%.01f]" % col_number
-    print "Total: %s colunas" % (len(cols))     
+    text = strip_metadata(get_text_elements(page))
+    create_table(*find_blocks(text, 11.5, 26.5))
