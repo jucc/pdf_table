@@ -4,29 +4,22 @@
 from pdf_table import *
 import unittest
 
-
-class Mock_block:
-    def __init__(self, x, y, tx):
-        self.x0 = x
-        self.y0 = y
-        self.text = tx
-
-    def getText(self):
-        return self.text
-
 class TestGetTableFromPdf(unittest.TestCase):
 
     def setUp(self):
         self.pdf = ('/home/ju/Downloads/A_B.pdf')
+        self.block = Block(42, 42, 'ju')
+        avg_height = 12
+        avg_width = 27
 
     def test_doc_has_pages(self):
         self.assertIsNotNone(get_doc_pages(self.pdf))
 
     def test_inside_partition(self):
-        self.assertTrue(belongs_to_partition(35, 42, 17))
+        self.assertTrue(self.block.belongs_to_line(39))
 
     def test_outside_partition(self):
-        self.assertFalse(belongs_to_partition(17, 42, 17))
+        self.assertFalse(self.block.belongs_to_column(17))
 
     def test_update_avg(self):
         l = [17, 35, 14]
@@ -35,31 +28,31 @@ class TestGetTableFromPdf(unittest.TestCase):
 
     def test_find_blocks(self):
         pages = get_doc_pages(self.pdf)
-        text = strip_metadata(get_text_elements(pages.next()))
-        blocks = find_blocks(text, 11.5, 26.5)
+        text = strip_metadata(get_text_blocks(pages.next()))
+        blocks = find_blocks(text, avg_height, avg_width)
         self.assertEquals(63, len(blocks[0]))
         self.assertEquals(10, len(blocks[1]))
 
     def test_convert_blocks_to_cells(self):
         lines = [10, 20]
         cols=[0, 10, 20, 30]
-        a = []
-        a.append(Mock_block(0, 10, 'ju'))
-        a.append(Mock_block(0, 20, 'ronald'))
-        a.append(Mock_block(10, 10, '9'))
-        a.append(Mock_block(10, 20, '10'))
-        a.append(Mock_block(20, 10, '7'))
-        a.append(Mock_block(30, 20, '8'))
+        blocks = []
+        blocks.append(Block(0, 10, 'ju'))
+        blocks.append(Block(0, 20, 'ronald'))
+        blocks.append(Block(10, 10, '9'))
+        blocks.append(Block(10, 20, '10'))
+        blocks.append(Block(20, 10, '7'))
+        blocks.append(Block(30, 20, '8'))
     
         expected = [['ju', 9, 7, None], ['ronald', 10, None, 8]]
-        result = create_table(a, lines, cols)
+        result = create_table(blocks, lines, cols)
         self.assertEquals(expected, result)
 
     def test_get_grade(self):
         line = ['ju', 10, None, 9, 8, None, None]
-        pesos = {1:2, 3:1, 4:1}
+        weights = {1:2, 3:1, 4:1}
         expected = (10 * 2 + 9 + 8) / 4
-        result = get_grade(line, pesos)
+        result = get_grade(line, weights)
         self.assertEquals(expected, result)
         
 
