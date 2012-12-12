@@ -32,15 +32,12 @@ def get_page_elements(page):
     interpreter.process_page(page)
     return device.get_result()
 
-def get_text_blocks(page):
+def get_text_elements(page):
     page_elements = get_page_elements(page)
     istext = lambda el: isinstance(el, LTTextBox) or isinstance(el, LTTextLine)
-    text_elements = filter(istext, page_elements)
-    return convert_to_blocks([ltTextBox for boxes in text_elements for ltTextBox in boxes])
+    return filter(istext, page_elements)
 
-def convert_to_blocks(ltTextBoxes):
-    blocks = [Block(tb.x0, tb.y0, tb.get_text()) for tb in ltTextBoxes]
-    
+
 class Block:
     def __init__(self, x, y, text):
         self.x = x
@@ -59,23 +56,27 @@ class Block:
     @staticmethod
     def belongs_to_partition(value, avg, partition_size):
         return abs(value - avg) < partition_size * deviation
+        
+    @staticmethod
+    def convert_to_blocks(text_elements):
+    """
+    Extracts pdfminer's LTTextLines and LTTextBox elements into simple text blocks (only x0, y0 and text)
+    """
+    blocks = [Block(tb.x0, tb.y0, tb.get_text()) for boxes in text_elements for tb in boxes])
 
     @staticmethod
     def strip_metadata(blocks):
     """
-    Converts pdfminer's LTText elements into simpler blocks (only x0, y0 and text)
-    and removes metadata blocks (title, report header, footer, table header)
-    Metadata removing works only for UERJ grade template specific pdf.
+    Removes metadata blocks (title, report header, footer, table header)
+    Works only for UERJ grade template specific pdf.
     """    
         data = lambda b: not(b.contains('/') or b.contains(':') or b.contains('Exame Discursivo') or b.contains('Nome do Candidato'))
         return filter(data, blocks)
     
-
-    
 def update_average(old_avg, old_len, new_value):
     return (old_avg * old_len + new_value) / (old_len + 1)
 
-def find_blocks(text, avg_line_height, avg_col_width):
+def find_partitions(text):
     lines = []
     cols = []
     for block in text:
@@ -98,10 +99,8 @@ def find_blocks(text, avg_line_height, avg_col_width):
 
     return lines, cols
 
-
-
-def create_table(blocks, lines, cols):    
- 
+def sort_table(text): 
+    lines, cols = find_partitions(text)
     for line_number in lines:
         print "[%.01f]" % line_number
     #       for cell in lines[line_number]:
@@ -109,12 +108,14 @@ def create_table(blocks, lines, cols):
     for col in cols:
         print "[%.01f]" % col
     return len(lines), len(cols)
-
-def get_grade(line, pesos):
-    pass
+    
+def extract_table(page):
+    elements = get_text_elements(page)    
+    text = Block.strip_metadata(Block.convert_to_blocks(text))
+    sort_table(text)
 
 if __name__ == "__main__":
     pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
     page = pages.next() # for i, page in enumerate(pages):
-    text = Block.strip_metadata(get_text_blocks(page))
-    create_table(text, *find_blocks(text, avg_height, avg_width))
+    table = extract_table(page)
+    
