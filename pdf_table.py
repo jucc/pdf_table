@@ -6,10 +6,10 @@ Reads a pdf document and converts it into a table
 Reference for pdfminer work: http://denis.papathanasiou.org/?tag=pdfminer
 """
 
-from pdfminer.pdfparser import PDFParser, PDFDocument, PDFNoOutlines
+from pdfminer.pdfparser import PDFParser, PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import PDFPageAggregator
-from pdfminer.layout import LAParams, LTTextBox, LTTextLine, LTFigure, LTImage
+from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 
 avg_height = 12
 avg_width = 27
@@ -36,10 +36,11 @@ def get_text_blocks(page):
     page_elements = get_page_elements(page)
     istext = lambda el: isinstance(el, LTTextBox) or isinstance(el, LTTextLine)
     text_elements = filter(istext, page_elements)
-    text_blocks = [text_block for textboxes in text_elements for text_block in textboxes]
-    return [Block(tb.x0, tb.y0, tb.get_text()) for tb in text_blocks]
+    return convert_to_blocks([ltTextBox for boxes in text_elements for ltTextBox in boxes])
 
-
+def convert_to_blocks(ltTextBoxes):
+    blocks = [Block(tb.x0, tb.y0, tb.get_text()) for tb in ltTextBoxes]
+    
 class Block:
     def __init__(self, x, y, text):
         self.x = x
@@ -59,6 +60,18 @@ class Block:
     def belongs_to_partition(value, avg, partition_size):
         return abs(value - avg) < partition_size * deviation
 
+    @staticmethod
+    def strip_metadata(blocks):
+    """
+    Converts pdfminer's LTText elements into simpler blocks (only x0, y0 and text)
+    and removes metadata blocks (title, report header, footer, table header)
+    Metadata removing works only for UERJ grade template specific pdf.
+    """    
+        data = lambda b: not(b.contains('/') or b.contains(':') or b.contains('Exame Discursivo') or b.contains('Nome do Candidato'))
+        return filter(data, blocks)
+    
+
+    
 def update_average(old_avg, old_len, new_value):
     return (old_avg * old_len + new_value) / (old_len + 1)
 
@@ -85,12 +98,7 @@ def find_blocks(text, avg_line_height, avg_col_width):
 
     return lines, cols
 
-def strip_metadata(blocks):
-    """
-    Works only for UERJ grade template specific pdf
-    """    
-    data = lambda b: not(b.contains('/') or b.contains(':') or b.contains('Exame Discursivo') or b.contains('Nome do Candidato'))
-    return filter(data, blocks)
+
 
 def create_table(blocks, lines, cols):    
  
@@ -108,5 +116,5 @@ def get_grade(line, pesos):
 if __name__ == "__main__":
     pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
     page = pages.next() # for i, page in enumerate(pages):
-    text = strip_metadata(get_text_blocks(page))
+    text = Block.strip_metadata(get_text_blocks(page))
     create_table(text, *find_blocks(text, avg_height, avg_width))
