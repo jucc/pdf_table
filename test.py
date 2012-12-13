@@ -1,7 +1,8 @@
 #!/usr/bin/env/python
 # -*- coding: utf-8 -*-
 
-from pdf_table import *
+from pdf import *
+from table import *
 import unittest
 
 class TestGetTableFromPdf(unittest.TestCase):
@@ -9,8 +10,6 @@ class TestGetTableFromPdf(unittest.TestCase):
     def setUp(self):
         self.pdf = ('/home/ju/Downloads/A_B.pdf')
         self.block = Block(42, 42, 'ju')
-        avg_height = 12
-        avg_width = 27
 
     def test_doc_has_pages(self):
         self.assertIsNotNone(get_doc_pages(self.pdf))
@@ -28,10 +27,11 @@ class TestGetTableFromPdf(unittest.TestCase):
 
     def test_find_blocks(self):
         pages = get_doc_pages(self.pdf)
-        text = strip_metadata(get_text_blocks(pages.next()))
-        blocks = find_blocks(text, avg_height, avg_width)
-        self.assertEquals(63, len(blocks[0]))
-        self.assertEquals(10, len(blocks[1]))
+        text = extract_text_elements(pages.next())
+        blocks = Block.strip_metadata(Block.convert_to_blocks(text))
+        pos = find_partitions(blocks)
+        self.assertEquals(63, len(pos[0]))
+        self.assertEquals(10, len(pos[1]))
 
     def test_convert_blocks_to_cells(self):
         lines = [10, 20]
@@ -45,7 +45,7 @@ class TestGetTableFromPdf(unittest.TestCase):
         blocks.append(Block(30, 20, '8'))
     
         expected = [['ju', 9, 7, None], ['ronald', 10, None, 8]]
-        result = create_table(blocks, lines, cols)
+        result = sort_table(blocks, lines, cols)
         self.assertEquals(expected, result)
 
     def test_get_grade(self):
