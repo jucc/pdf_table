@@ -16,16 +16,26 @@ class Block:
     def contains(self, tx):
         return self.text.find(tx) != -1
 
+    @staticmethod
+    def belongs_to_partition(value, avg, partition_size):
+        return abs(value - avg) < partition_size * deviation
+        
     def belongs_to_column(self, x_col):
         return Block.belongs_to_partition(self.x, x_col, avg_width)
 
     def belongs_to_line(self, y_line):
         return Block.belongs_to_partition(self.y, y_line, avg_height)
-    
-    @staticmethod
-    def belongs_to_partition(value, avg, partition_size):
-        return abs(value - avg) < partition_size * deviation
-        
+
+    def find_line(self, lines):
+        for i,l in enumerate(lines):
+            if self.belongs_to_line(l):
+                return i
+
+    def find_col(self, cols):
+        for i,c in enumerate(cols):
+            if self.belongs_to_column(c):
+                return i
+
     @staticmethod
     def convert_to_blocks(text_elements):
         blocks = [Block(tb.x0, tb.y0, tb.get_text()) for tb in text_elements] 

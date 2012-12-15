@@ -12,15 +12,15 @@ class TestPdfToTable(unittest.TestCase):
         self.pdf = ('/home/ju/Downloads/A_B.pdf')
         self.block = Block(42, 42, 'ju')
 
-        self.lines = [10, 20]
-        self.cols=[0, 10, 20, 30]
+        self.lines = [10, 22]
+        self.cols=[0, 27, 54, 81]
         self.blocks = []
         self.blocks.append(Block(0, 10, 'ju'))
-        self.blocks.append(Block(10, 20, '10'))
-        self.blocks.append(Block(0, 20, 'ronald'))
-        self.blocks.append(Block(10, 10, '9'))
-        self.blocks.append(Block(20, 10, '9'))
-        self.blocks.append(Block(30, 20, '10'))
+        self.blocks.append(Block(27, 22, '10'))
+        self.blocks.append(Block(0, 22, 'ronald'))
+        self.blocks.append(Block(27, 10, '9'))
+        self.blocks.append(Block(54, 10, '9'))
+        self.blocks.append(Block(81, 22, '10'))
   
         self.line_ju = ['ju', None, None, None, None, None, None, 8.5, 5.5, 8]
         self.line_ron = ['ronald', None, None, None, None, None, 10, 10, None, 10]
@@ -40,12 +40,12 @@ class TestPdfToTable(unittest.TestCase):
         self.assertEquals(27, update_average(22, 3, 42))
 
     def test_find_line(self):
-        block = Block(10, 10, 9)
+        block = Block(54, 10, '9')
         result = block.find_line(self.lines)
         self.assertEquals(0, result)
 
     def test_find_col(self):        
-        block = Block(20, 10, '9')
+        block = Block(54, 10, '9')
         result = block.find_col(self.cols)
         self.assertEquals(2, result)
 
