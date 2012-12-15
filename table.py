@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
-from pdf import get_doc_pages, get_page_elements, extract_text_elements
-
-
 avg_height = 12
 avg_width = 27
 deviation = 0.5
@@ -78,7 +74,7 @@ def find_partitions(text):
             lines.append(block.y)
         lines.sort(reverse=True)
 
-    return  lines, cols
+    return lines, cols
 
 
 def print_blocks(text): 
@@ -107,15 +103,3 @@ def assemble_table(blocks):
         line, col = block.find_position(lines, cols)
         table[line][col] = block.text
     return table[1:] # slicing removes the header
-
-
-
-if __name__ == "__main__":
-    pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
-    page = pages.next()    
-    text = extract_text_elements(page)
-    blocks = Block.strip_metadata(Block.convert_to_blocks(text))
-    table = assemble_table(blocks)
-    for line in table:
-        print line
-
