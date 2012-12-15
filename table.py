@@ -63,7 +63,7 @@ def find_partitions(text):
 
     return lines, cols
 
-def sort_table(text): 
+def print_blocks(text): 
     lines, cols = find_partitions(text)
     print 'LINHAS'
     for i, y in enumerate(lines):
@@ -75,10 +75,12 @@ def sort_table(text):
         print "[%i] %.01f" % (j, x)
     return len(lines), len(cols)
     
+def assemble_table(blocks):
+    pass
 
 if __name__ == "__main__":
     pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
     page = pages.next()    
     text = extract_text_elements(page)
     blocks = Block.strip_metadata(Block.convert_to_blocks(text))
-    sort_table(blocks)
+    print_blocks(blocks)
