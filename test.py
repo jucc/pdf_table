@@ -17,11 +17,13 @@ class TestPdfToTable(unittest.TestCase):
         self.cols=[0, 27, 54, 81]
         self.blocks = []
         self.blocks.append(Block(0, 10, 'ju'))
-        self.blocks.append(Block(27, 22, '10'))
-        self.blocks.append(Block(0, 22, 'ronald'))
+        self.blocks.append(Block(27, 0, '10'))
+        self.blocks.append(Block(0, 0, 'ronald'))
+        self.blocks.append(Block(54, 22, 'header'))
         self.blocks.append(Block(27, 10, '9'))
-        self.blocks.append(Block(54, 10, '9'))
-        self.blocks.append(Block(81, 22, '10'))
+        self.blocks.append(Block(54, 10, '9 10'))
+        self.blocks.append(Block(81, 0, '10'))
+
   
         self.line_ju = ['ju', None, None, None, None, None, None, 8.5, 5.5, 8]
         self.line_ron = ['ronald', None, None, None, None, None, 10, 10, None, 10]
@@ -72,7 +74,7 @@ class TestPdfToTable(unittest.TestCase):
 
     def test_blocks_to_lines(self):
         blocks = self.blocks
-        expected = [['ju', '9', '9', None], ['ronald', '10', None, '10']]
+        expected = [['ju', '9', '9', '10'], ['ronald', '10', None, '10']]
         result = assemble_table(blocks)
         self.assertEquals(expected, result)
 

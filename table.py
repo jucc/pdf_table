@@ -97,9 +97,18 @@ def empty_table(lines, cols):
 
 
 def assemble_table(blocks):
+    """
+    solves a specific problem in which columns too close together are joined
+    must not be used when table may contain spaces in columns other than the first one
+    """
     lines, cols = find_partitions(blocks)
     table = empty_table(lines, cols)
     for block in blocks:
         line, col = block.find_position(lines, cols)
-        table[line][col] = block.text
+        if col == 0 :
+            cells = [block.text]
+        else:
+            cells = block.text.split(' ')
+        for i in range(0, len(cells)):
+            table[line][col + i] = cells[i]
     return table[1:] # slicing removes the header
