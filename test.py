@@ -39,6 +39,15 @@ class TestPdfToTable(unittest.TestCase):
         l = [17, 35, 14]
         self.assertEquals(27, update_average(22, 3, 42))
 
+    def test_find_line(self):
+        block = Block(10, 10, 9)
+        result = block.find_line(self.lines)
+        self.assertEquals(0, result)
+
+    def test_find_col(self):        
+        block = Block(20, 10, '9')
+        result = block.find_col(self.cols)
+        self.assertEquals(2, result)
 
     def test_find_blocks(self):
         pages = get_doc_pages(self.pdf)
@@ -48,7 +57,7 @@ class TestPdfToTable(unittest.TestCase):
         self.assertEquals(63, len(pos[0]))
         self.assertEquals(10, len(pos[1]))
 
-    def test_blocks_to_cells(self):
+    def test_blocks_to_lines(self):
         blocks = self.blocks
         expected = [['ju', 9, 9, None], ['ronald', 10, None, 10]]
         result = assemble_table(blocks)
