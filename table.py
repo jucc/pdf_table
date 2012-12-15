@@ -95,6 +95,12 @@ def empty_table(lines, cols):
     if isinstance(cols, list): cols = len(cols)
     return [[None]*cols for x in xrange(lines)]
 
+def replace(text):
+    if text == 'FALTA':
+        text = '0.0'
+    else:
+        text = text.replace(',', '.')
+    return text
 
 def assemble_table(blocks):
     """
@@ -103,12 +109,14 @@ def assemble_table(blocks):
     """
     lines, cols = find_partitions(blocks)
     table = empty_table(lines, cols)
-    for block in blocks:
+    not_header = lambda x: x.find_line(lines) != 0
+
+    for block in filter(not_header, blocks):
         line, col = block.find_position(lines, cols)
         if col == 0 :
-            cells = [block.text]
+            table[line][0] = block.text
         else:
             cells = block.text.split(' ')
-        for i in range(0, len(cells)):
-            table[line][col + i] = cells[i]
-    return table[1:] # slicing removes the header
+            for i in range(0, len(cells)):
+                table[line][col + i] = float(replace(cells[i]))
+    return table[1:]
