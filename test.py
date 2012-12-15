@@ -60,9 +60,19 @@ class TestPdfToTable(unittest.TestCase):
         self.assertEquals(63, len(pos[0]))
         self.assertEquals(10, len(pos[1]))
 
+    def test_empty_table(self):
+        expected = [[None, None], [None, None], [None, None]]
+        result = empty_table(3, 2)
+        self.assertEquals(expected, result)
+
+    def test_empty_table_passing_list(self):
+        expected = [[None, None], [None, None], [None, None]]
+        result = empty_table(range(3), range(2))
+        self.assertEquals(expected, result)
+
     def test_blocks_to_lines(self):
         blocks = self.blocks
-        expected = [['ju', 9, 9, None], ['ronald', 10, None, 10]]
+        expected = [['ju', '9', '9', None], ['ronald', '10', None, '10']]
         result = assemble_table(blocks)
         self.assertEquals(expected, result)
 

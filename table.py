@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
 from pdf import get_doc_pages, get_page_elements, extract_text_elements
+
 
 avg_height = 12
 avg_width = 27
 deviation = 0.5
+
 
 class Block:
     def __init__(self, x, y, text):
@@ -53,6 +56,7 @@ class Block:
 def update_average(old_avg, old_len, new_value):
     return (old_avg * old_len + new_value) / (old_len + 1)
 
+
 def find_partitions(text):
     lines = []
     cols = []
@@ -76,6 +80,7 @@ def find_partitions(text):
 
     return lines, cols
 
+
 def print_blocks(text): 
     lines, cols = find_partitions(text)
     print 'LINHAS'
@@ -88,21 +93,21 @@ def print_blocks(text):
         print "[%i] %.01f" % (j, x)
     return len(lines), len(cols)
     
-def fixed_table(lines, cols):
-    table = []
-    for i in range (len(lines)):
-        line = []
-        for j in range (len(cols)):
-            line.append(None)
-        table.append(line)
-    return table
+
+def empty_table(lines, cols):
+    if isinstance(lines, list): lines = len(lines)
+    if isinstance(cols, list): cols = len(cols)
+    return [[None]*cols for x in xrange(lines)]
+
 
 def assemble_table(blocks):
     lines, cols = find_partitions(blocks)
-    table = fixed_table(lines, cols)
-
+    table = empty_table(lines, cols)
     for block in blocks:
-        pass
+        line, col = block.find_position(lines, cols)
+        table[line][col] = block.text
+    return table
+
 
 if __name__ == "__main__":
     pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
@@ -110,5 +115,6 @@ if __name__ == "__main__":
     text = extract_text_elements(page)
     blocks = Block.strip_metadata(Block.convert_to_blocks(text))
     print_blocks(blocks)
-    print fixed_table(range(3), range(4))
+    print empty_table(3, 4)
+
 
