@@ -36,6 +36,9 @@ class Block:
             if self.belongs_to_column(c):
                 return i
 
+    def find_position(self, lines, cols):
+        return (self.find_line(lines), self.find_col(cols))
+
     @staticmethod
     def convert_to_blocks(text_elements):
         blocks = [Block(tb.x0, tb.y0, tb.get_text()) for tb in text_elements] 
@@ -85,8 +88,21 @@ def print_blocks(text):
         print "[%i] %.01f" % (j, x)
     return len(lines), len(cols)
     
+def fixed_table(lines, cols):
+    table = []
+    for i in range (len(lines)):
+        line = []
+        for j in range (len(cols)):
+            line.append(None)
+        table.append(line)
+    return table
+
 def assemble_table(blocks):
-    pass
+    lines, cols = find_partitions(blocks)
+    table = fixed_table(lines, cols)
+
+    for block in blocks:
+        pass
 
 if __name__ == "__main__":
     pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
@@ -94,3 +110,5 @@ if __name__ == "__main__":
     text = extract_text_elements(page)
     blocks = Block.strip_metadata(Block.convert_to_blocks(text))
     print_blocks(blocks)
+    print fixed_table(range(3), range(4))
+
