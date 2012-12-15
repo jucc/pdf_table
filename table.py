@@ -44,7 +44,7 @@ class Block:
 
     @staticmethod
     def convert_to_blocks(text_elements):
-        blocks = [Block(tb.x0, tb.y0, tb.get_text()) for tb in text_elements] 
+        blocks = [Block(tb.x0, tb.y0, tb.get_text().encode('utf-8').strip()) for tb in text_elements] 
         return blocks
 
     @staticmethod
@@ -76,9 +76,9 @@ def find_partitions(text):
                 break
         else:
             lines.append(block.y)
-        lines.sort()
+        lines.sort(reverse=True)
 
-    return lines, cols
+    return  lines, cols
 
 
 def print_blocks(text): 
@@ -106,7 +106,8 @@ def assemble_table(blocks):
     for block in blocks:
         line, col = block.find_position(lines, cols)
         table[line][col] = block.text
-    return table
+    return table[1:] # slicing removes the header
+
 
 
 if __name__ == "__main__":
@@ -114,7 +115,7 @@ if __name__ == "__main__":
     page = pages.next()    
     text = extract_text_elements(page)
     blocks = Block.strip_metadata(Block.convert_to_blocks(text))
-    print_blocks(blocks)
-    print empty_table(3, 4)
-
+    table = assemble_table(blocks)
+    for line in table:
+        print line
 
