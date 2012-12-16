@@ -7,10 +7,7 @@ from grades import *
 
 chem_candidates = []
 pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
-for i in range(70):
-    pages.next()
-for i in range(1):
-    page = pages.next()
+for page in pages:
     text = extract_text_elements(page)
     blocks = Block.strip_metadata(Block.convert_to_blocks(text))
     table = assemble_table(blocks)

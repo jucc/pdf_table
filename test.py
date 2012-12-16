@@ -1,6 +1,8 @@
 #!/usr/bin/env/python
 # -*- coding: utf-8 -*-
 
+import conf
+conf.use_fix_columns = False
 from pdf import *
 from table import *
 from grades import *
@@ -9,12 +11,12 @@ import unittest
 class TestPdfToTable(unittest.TestCase):
 
     def setUp(self):
+        conf.use_fix_columns = False
         self.pdf = ('/home/ju/Downloads/A_B.pdf')
         self.block = Block(42, 42, 'ju')
         self.block2 = Block(54, 10, '9')
-
         self.lines = [10, 22]
-        self.cols=[0, 27, 54, 81]
+        self.cols = [0, 27, 54, 81]
         self.blocks = []
         self.blocks.append(Block(0, 10, 'ju'))
         self.blocks.append(Block(27, 0, '10'))
@@ -114,12 +116,14 @@ class TestPdfToTable(unittest.TestCase):
 
     def test_big_names_break_col_count(self):
         pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
-        for i in range(71):
+        for i in range(70):
             page = pages.next()
         text = extract_text_elements(page)
         blocks = Block.strip_metadata(Block.convert_to_blocks(text))
+#       nlines, ncols = print_blocks(blocks)
         lines, cols = find_partitions(blocks)
-        self.assertEquals(10, len(cols))
+        ncols = len(cols)
+        self.assertEquals(10, ncols)
 
 
 if __name__ == '__main__':

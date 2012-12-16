@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-avg_height = 12
-avg_width = 27
-deviation = 0.5
-
+from conf import *
 
 class Block:
     def __init__(self, x, y, text):
@@ -57,15 +54,17 @@ def find_partitions(text):
     lines = []
     cols = []
     for block in text:
-
-        for x_col in cols:
-            if block.belongs_to_column(x_col):
-                x_col = update_average(x_col, len(cols) - 1, block.x)
-                break
+        if use_fix_columns: #cols defined in conf.py
+            cols = fix_columns
         else:
-            cols.append(block.x)
-        cols.sort()
-
+            for x_col in cols:
+                if block.belongs_to_column(x_col):
+                    x_col = update_average(x_col, len(cols) - 1, block.x)
+                    break
+            else:
+                cols.append(block.x)
+            cols.sort()
+        
         for y_line in lines:
             if block.belongs_to_line(y_line):
                 y_line = update_average(y_line, len(lines) - 1, block.y)
