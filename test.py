@@ -101,7 +101,7 @@ class TestPdfToTable(unittest.TestCase):
             ['ju4', None, 'grade1', 'grade2', 80.6],
             ['ju5', None, 'grade1', 'grade2', 80.0],
         ]
-        result = sort_grades(graded_lines)
+        sort_grades(graded_lines)
         expected = [
             ['ju2', None, 'grade1', 'grade2', 100],
             ['ju4', None, 'grade1', 'grade2', 80.6],
@@ -109,7 +109,17 @@ class TestPdfToTable(unittest.TestCase):
             ['ju5', None, 'grade1', 'grade2', 80.0],
             ['ju3', None, 'grade1', 'grade2', 0.0],
         ]
-        self.assertEquals(expected, result)
+        self.assertEquals(expected, graded_lines)
+
+
+    def test_big_names_break_col_count(self):
+        pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
+        for i in range(71):
+            page = pages.next()
+        text = extract_text_elements(page)
+        blocks = Block.strip_metadata(Block.convert_to_blocks(text))
+        lines, cols = find_partitions(blocks)
+        self.assertEquals(10, len(cols))
 
 
 if __name__ == '__main__':

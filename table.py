@@ -73,7 +73,6 @@ def find_partitions(text):
         else:
             lines.append(block.y)
         lines.sort(reverse=True)
-
     return lines, cols
 
 
