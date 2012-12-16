@@ -93,6 +93,24 @@ class TestPdfToTable(unittest.TestCase):
         expected.append(80.5)
         self.assertEquals([expected, expected, expected], lines)
 
+    def test_sort_grades(self):
+        graded_lines = [
+            ['ju1', None, 'grade1', 'grade2', 80.5],
+            ['ju2', None, 'grade1', 'grade2', 100],
+            ['ju3', None, 'grade1', 'grade2', 0.0],
+            ['ju4', None, 'grade1', 'grade2', 80.6],
+            ['ju5', None, 'grade1', 'grade2', 80.0],
+        ]
+        result = sort_grades(graded_lines)
+        expected = [
+            ['ju2', None, 'grade1', 'grade2', 100],
+            ['ju4', None, 'grade1', 'grade2', 80.6],
+            ['ju1', None, 'grade1', 'grade2', 80.5],
+            ['ju5', None, 'grade1', 'grade2', 80.0],
+            ['ju3', None, 'grade1', 'grade2', 0.0],
+        ]
+        self.assertEquals(expected, result)
+
 
 if __name__ == '__main__':
     unittest.main()

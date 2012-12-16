@@ -11,3 +11,6 @@ def grade_students(lines):
 def get_chem_eng(lines):
     is_chemeng = lambda x: x[7] != None and x[8] != None
     return filter(is_chemeng, lines)
+
+def sort_grades(lines):
+    pass
