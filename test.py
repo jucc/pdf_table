@@ -23,10 +23,9 @@ class TestPdfToTable(unittest.TestCase):
         self.blocks.append(Block(27, 10, '9'))
         self.blocks.append(Block(54, 10, '9.5 10'))
         self.blocks.append(Block(81, 0, '10'))
-
   
-        self.line_ju = ['ju', None, None, None, None, None, None, 8.5, 5.5, 8]
-        self.line_ron = ['ronald', None, None, None, None, None, 10, 10, None, 10]
+        self.line_ju = ['ju', None, None, None, None, None, None, 11.0, 17.0, 15.5]
+        self.line_ron = ['ronald', None, None, None, None, None, 18.0, 17.0, None, 16.0]
 
     def test_doc_has_pages(self):
         self.assertIsNotNone(get_doc_pages(self.pdf))
@@ -84,9 +83,8 @@ class TestPdfToTable(unittest.TestCase):
         self.assertEquals([self.line_ju], result)        
 
     def test_get_grade(self):
-        weights = {7:2, 8:1, 9:1}
-        result = get_grade(self.line_ju, weights)
-        self.assertEquals(40.1, result)
+        result = get_grade(self.line_ju)
+        self.assertEquals(80.5, result)
         
 
 if __name__ == '__main__':
