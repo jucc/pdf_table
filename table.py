@@ -94,10 +94,9 @@ def empty_table(lines, cols):
     return [[None]*cols for x in xrange(lines)]
 
 def replace(text):
-    if text == 'FALTA':
+    text = text.replace(',', '.')    
+    if text == 'FALTA' or text == 'ELIM':
         text = '0.0'
-    else:
-        text = text.replace(',', '.')
     return text
 
 def assemble_table(blocks):
