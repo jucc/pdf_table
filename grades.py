@@ -8,7 +8,7 @@ def get_chem_eng(lines):
 
 
 def get_grade(line):
-    return line[8] * 2 + line[7] + line[9] + 20
+    return float(line[8]) * 2 + float(line[7]) + float(line[9]) + 20
 
 
 def grade_students(lines):
@@ -17,7 +17,7 @@ def grade_students(lines):
 
 
 def sort_grades(lines):
-    sort_by_final_grade = lambda x: x[-1]
+    sort_by_final_grade = lambda x: (x[-1], x[-3], x[-4], x[-2])
     lines.sort(key=sort_by_final_grade, reverse=True)
 
 

@@ -12,22 +12,22 @@ class TestPdfToTable(unittest.TestCase):
 
     def setUp(self):
         conf.use_fix_columns = False
-        self.pdf = ('/home/ju/Downloads/A_B.pdf')
+        self.pdf = ('pdf2012/A_B.pdf')
         self.block = Block(42, 42, 'ju')
         self.block2 = Block(54, 10, '9')
         self.lines = [10, 22]
         self.cols = [0, 27, 54, 81]
         self.blocks = []
-        self.blocks.append(Block(0, 10, 'ju'))
+        self.blocks.append(Block(0, 10, 'JU'))
         self.blocks.append(Block(27, 0, '10'))
-        self.blocks.append(Block(0, 0, 'ronald'))
+        self.blocks.append(Block(0, 0, 'RONALD'))
         self.blocks.append(Block(54, 22, 'header'))
         self.blocks.append(Block(27, 10, '9'))
-        self.blocks.append(Block(54, 10, '9.5 10'))
+        self.blocks.append(Block(54, 10, '9,5 10'))
         self.blocks.append(Block(81, 0, '10'))
   
-        self.line_ju = ['ju', None, None, None, None, None, None, 11.0, 17.0, 15.5]
-        self.line_ron = ['ronald', None, None, None, None, None, 18.0, 17.0, None, 16.0]
+        self.line_ju = ['JU', None, None, None, None, None, None, 11.0, 17.0, 15.5]
+        self.line_ron = ['RONALD', None, None, None, None, None, 18.0, 17.0, None, 16.0]
 
     def test_doc_has_pages(self):
         self.assertIsNotNone(get_doc_pages(self.pdf))
@@ -75,8 +75,11 @@ class TestPdfToTable(unittest.TestCase):
 
     def test_blocks_to_lines(self):
         blocks = self.blocks
-        expected = [['ju', 9, 9.5, 10], ['ronald', 10, None, 10]]
-        result = assemble_table(blocks)
+        expected = [['JU', '9', '9.5', '10'], ['RONALD', '10', None, '10']]
+        b = Block.strip_metadata(blocks)
+        for i in b:
+            print i.text
+        result = assemble_table(b)
         self.assertEquals(expected, result)
 
     def test_get_chem_eng(self):
@@ -97,33 +100,30 @@ class TestPdfToTable(unittest.TestCase):
 
     def test_sort_grades(self):
         graded_lines = [
-            ['ju1', None, 'grade1', 'grade2', 80.5],
-            ['ju2', None, 'grade1', 'grade2', 100],
-            ['ju3', None, 'grade1', 'grade2', 0.0],
-            ['ju4', None, 'grade1', 'grade2', 80.6],
-            ['ju5', None, 'grade1', 'grade2', 80.0],
+            ['ju1', None, 10, 9, 10, 80.5],
+            ['ju2', None, 10, 10, 10, 100],
+            ['ju3', None, 10, 10, 10, 0.0],
+            ['ju4', None, 10, 10, 10, 80.5],
+            ['ju5', None, 9, 10, 10, 80.5],
         ]
         sort_grades(graded_lines)
         expected = [
-            ['ju2', None, 'grade1', 'grade2', 100],
-            ['ju4', None, 'grade1', 'grade2', 80.6],
-            ['ju1', None, 'grade1', 'grade2', 80.5],
-            ['ju5', None, 'grade1', 'grade2', 80.0],
-            ['ju3', None, 'grade1', 'grade2', 0.0],
+            ['ju2', None, 10, 10, 10, 100],
+            ['ju4', None, 10, 10, 10, 80.5],
+            ['ju5', None, 9, 10, 10, 80.5],
+            ['ju1', None, 10, 9, 10, 80.5],
+            ['ju3', None, 10, 10, 10, 0.0],
         ]
         self.assertEquals(expected, graded_lines)
 
 
-    def test_big_names_break_col_count(self):
-        pages = get_doc_pages('/home/ju/Downloads/A_B.pdf')
-        for i in range(70):
-            page = pages.next()
+    def test_qualifying_exam(self):
+        pages = get_doc_pages('qual2012/A_B.pdf')
+        page = pages.next()
         text = extract_text_elements(page)
         blocks = Block.strip_metadata(Block.convert_to_blocks(text))
-#       nlines, ncols = print_blocks(blocks)
-        lines, cols = find_partitions(blocks)
-        ncols = len(cols)
-        self.assertEquals(10, ncols)
+        table = assemble_table(blocks)
+        self.assertEquals(3, len(table[0]))
 
 
 if __name__ == '__main__':

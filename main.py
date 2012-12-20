@@ -31,7 +31,7 @@ pdfs = map(lambda x: dirname + '/' + x, listdir(dirname))
 
 for pdf in pdfs:
     print "-----Parsing %s-----" % pdf
-    chem_candidates.extend(candidates_on_pdf(pdf))
+    chem_candidates.extend(candidates_on_pdf(pdf))    
      
 rank(chem_candidates)
 

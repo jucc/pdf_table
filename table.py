@@ -42,7 +42,7 @@ class Block:
 
     @staticmethod
     def strip_metadata(blocks):
-        is_data = lambda b: not(b.contains('/') or b.contains(':') or b.contains('Exame Discursivo') or b.contains('Nome do Candidato'))
+        is_data = lambda b: not(b.contains('/') or b.contains(':') or b.contains('Exame Discursivo') or b.contains('Nome') or (b.contains('UERJ') and b.contains('UEZO')) or b.contains('Faltoso') or b.contains('Vestibular Estadual') or b.contains('Resultado Geral') or b.contains('Inscri')or b.contains('Acertos') or b.contains('Conceito'))
         return filter(is_data, blocks)
     
 
@@ -115,5 +115,5 @@ def assemble_table(blocks):
         else:
             cells = block.text.split(' ')
             for i in range(0, len(cells)):
-                table[line][col + i] = float(replace(cells[i]))
+                table[line][col + i] = replace(cells[i])
     return table[1:]
