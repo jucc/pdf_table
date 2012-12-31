@@ -77,8 +77,6 @@ class TestPdfToTable(unittest.TestCase):
         blocks = self.blocks
         expected = [['JU', '9', '9.5', '10'], ['RONALD', '10', None, '10']]
         b = Block.strip_metadata(blocks)
-        for i in b:
-            print i.text
         result = assemble_table(b)
         self.assertEquals(expected, result)
 
@@ -100,19 +98,19 @@ class TestPdfToTable(unittest.TestCase):
 
     def test_sort_grades(self):
         graded_lines = [
-            ['ju1', None, 10, 9, 10, 80.5],
-            ['ju2', None, 10, 10, 10, 100],
-            ['ju3', None, 10, 10, 10, 0.0],
-            ['ju4', None, 10, 10, 10, 80.5],
-            ['ju5', None, 9, 10, 10, 80.5],
+            ['ju1', None, None, None, None, None, None, 10, 9, 10, 80.5],
+            ['ju2', None, None, None, None, None, None, 10, 10, 10, 100],
+            ['ju3', None, None, None, None, None, None, 10, 10, 10, 0.0],
+            ['ju4', None, None, None, None, None, None, 10, 10, 10, 80.5],
+            ['ju5', None, None, None, None, None, None, 9, 10, 10, 80.5],
         ]
         sort_grades(graded_lines)
         expected = [
-            ['ju2', None, 10, 10, 10, 100],
-            ['ju4', None, 10, 10, 10, 80.5],
-            ['ju5', None, 9, 10, 10, 80.5],
-            ['ju1', None, 10, 9, 10, 80.5],
-            ['ju3', None, 10, 10, 10, 0.0],
+            ['ju2', None, None, None, None, None, None, 10, 10, 10, 100],
+            ['ju4', None, None, None, None, None, None, 10, 10, 10, 80.5],
+            ['ju5', None, None, None, None, None, None, 9, 10, 10, 80.5],
+            ['ju1', None, None, None, None, None, None, 10, 9, 10, 80.5],
+            ['ju3', None, None, None, None, None, None, 10, 10, 10, 0.0],
         ]
         self.assertEquals(expected, graded_lines)
 

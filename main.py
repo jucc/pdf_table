@@ -6,6 +6,7 @@ from table import *
 from grades import *
 import sys
 from os import listdir
+import cProfile
 
 
 def candidates_on_page(page):
@@ -31,9 +32,11 @@ pdfs = map(lambda x: dirname + '/' + x, listdir(dirname))
 
 for pdf in pdfs:
     print "-----Parsing %s-----" % pdf
-    chem_candidates.extend(candidates_on_pdf(pdf))    
+    chem_candidates.extend(candidates_on_pdf(pdf)) 
+
+print '-----Ranking----'
      
 rank(chem_candidates)
 
 for i, line in enumerate(chem_candidates):
-    print "[%i: %s] %.02f" % (i+1, line[0], line[-1])
+    print "[%i] %s : %.02f" % (i+1, line[0], line[-1])
