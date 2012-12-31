@@ -75,6 +75,17 @@ def find_partitions(text):
     return lines, cols
 
 
+
+def find_lines(blocks):
+    lines = {}
+    for block in blocks:
+        pass
+    return range(67)
+
+
+def get_name(col):
+    return ' '.join(col.split(' ')[1:])
+
 def print_blocks(text): 
     lines, cols = find_partitions(text)
     print 'LINHAS'
@@ -111,7 +122,7 @@ def assemble_table(blocks):
     for block in filter(not_header, blocks):
         line, col = block.find_position(lines, cols)
         if col == 0 :
-            table[line][0] = block.text
+            table[line][0] = block.text.split(' ')[0] + get_name(block.text)
         else:
             cells = block.text.split(' ')
             for i in range(0, len(cells)):

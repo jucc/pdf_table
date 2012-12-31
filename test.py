@@ -73,6 +73,11 @@ class TestPdfToTable(unittest.TestCase):
         result = empty_table(range(3), range(2))
         self.assertEquals(expected, result)
 
+    def test_get_name(self):
+        col = '12345-6 JULIANA CAVALCANTI CORREA'
+        result = get_name(col)
+        self.assertEquals('JULIANA CAVALCANTI CORREA', result)
+
     def test_blocks_to_lines(self):
         blocks = self.blocks
         expected = [['JU', '9', '9.5', '10'], ['RONALD', '10', None, '10']]
@@ -122,6 +127,14 @@ class TestPdfToTable(unittest.TestCase):
         blocks = Block.strip_metadata(Block.convert_to_blocks(text))
         table = assemble_table(blocks)
         self.assertEquals(3, len(table[0]))
+
+        
+    def test_get_lines(self):
+        pages = get_doc_pages(self.pdf)
+        text = extract_text_elements(pages.next())
+        blocks = Block.strip_metadata(Block.convert_to_blocks(text))
+        res = find_lines(blocks)
+        self.assertEquals(67, len(res))
 
 
 if __name__ == '__main__':
