@@ -103,11 +103,11 @@ class TestPdfToTable(unittest.TestCase):
 
     def test_sort_grades(self):
         graded_lines = [
-            ['ju1', None, None, None, None, None, None, 10, 9, 10, 80.5],
+            ['ju1', None, None, None, None, None, None, 10,  9, 10,  80.5],
             ['ju2', None, None, None, None, None, None, 10, 10, 10, 100],
-            ['ju3', None, None, None, None, None, None, 10, 10, 10, 0.0],
-            ['ju4', None, None, None, None, None, None, 10, 10, 10, 80.5],
-            ['ju5', None, None, None, None, None, None, 9, 10, 10, 80.5],
+            ['ju3', None, None, None, None, None, None, 10, 10, 10,   0.0],
+            ['ju4', None, None, None, None, None, None, 10, 10, 10,  80.5],
+            ['ju5', None, None, None, None, None, None,  9, 10, 10,  80.5],
         ]
         sort_grades(graded_lines)
         expected = [
@@ -134,8 +134,14 @@ class TestPdfToTable(unittest.TestCase):
         text = extract_text_elements(pages.next())
         blocks = Block.strip_metadata(Block.convert_to_blocks(text))
         res = find_lines(blocks)
-        self.assertEquals(67, len(res))
+        
+#        for i, line in enumerate(res):
+#            for block in line['blocks']:
+#                print "[%i] %s" % (i+1,  block.text)
+#            print '-------'
 
+        self.assertEquals(62, len(res))
+   
 
 if __name__ == '__main__':
     unittest.main()
