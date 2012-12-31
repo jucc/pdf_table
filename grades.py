@@ -4,12 +4,12 @@
 from conf import *
 
 def get_chem_eng(lines):
-    is_chemeng = lambda x: x[fis] != None and x[mat] != None
+    is_chemeng = lambda x: x[qui] != None and x[mat] != None
     return filter(is_chemeng, lines)
 
 
 def get_grade(line):
-    return 2*float(line[mat]) + float(line[fis]) + float(line[red])
+    return 2*float(line[qui]) + float(line[mat]) + float(line[red])
 
 
 def grade_students(lines):
@@ -18,7 +18,7 @@ def grade_students(lines):
 
 
 def sort_grades(lines):
-    sort_by_final_grade = lambda x: (x[-1], x[mat], x[fis], x[red])
+    sort_by_final_grade = lambda x: (x[-1], x[qui], x[mat], x[red])
     lines.sort(key=sort_by_final_grade, reverse=True)
 
 

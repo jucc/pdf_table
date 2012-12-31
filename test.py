@@ -92,13 +92,13 @@ class TestPdfToTable(unittest.TestCase):
 
     def test_get_grade(self):
         result = get_grade(self.line_ju)
-        self.assertEquals(80.5, result)
+        self.assertEquals(60.5, result)
         
     def test_grade_students(self):
         lines = [self.line_ju[:], self.line_ju[:], self.line_ju[:]]
         grade_students(lines)
         expected = self.line_ju[:]
-        expected.append(80.5)
+        expected.append(60.5)
         self.assertEquals([expected, expected, expected], lines)
 
     def test_sort_grades(self):
