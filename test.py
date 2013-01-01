@@ -79,11 +79,11 @@ class TestPdfToTable(unittest.TestCase):
         self.assertEquals('JULIANA CAVALCANTI CORREA', result)
 
     def test_blocks_to_lines(self):
-        blocks = self.blocks
         expected = [['JU', '9', '9.5', '10'], ['RONALD', '10', None, '10']]
-        b = Block.strip_metadata(blocks)
-        result = assemble_table(b)
+        b = Block.strip_metadata(self.blocks)
+        result = assemble_table2(b)
         self.assertEquals(expected, result)
+
 
     def test_get_chem_eng(self):
         lines = [self.line_ju, self.line_ron]
@@ -129,7 +129,7 @@ class TestPdfToTable(unittest.TestCase):
         self.assertEquals(3, len(table[0]))
 
         
-    def test_get_lines(self):
+    def test_get_lines_from_real_doc(self):
         pages = get_doc_pages(self.pdf)
         text = extract_text_elements(pages.next())
         blocks = Block.strip_metadata(Block.convert_to_blocks(text))
@@ -143,12 +143,17 @@ class TestPdfToTable(unittest.TestCase):
         self.assertEquals(62, len(res))
 
 
-    def get_lines2(self):
-        blocks = self.blocks
-        expected = [10, 22]
+    def get_lines_from_blocks(self):
+        expected = self.lines
         result = map(lambda x: x['height'], find_lines(self.blocks))
         self.assertEquals(expected, result)
-   
+
+
+    def test_find_cols(self):
+        expected = self.cols
+        result = find_cols(self.blocks)
+        self.assertEquals(expected, result)
+  
 
 if __name__ == '__main__':
     unittest.main()

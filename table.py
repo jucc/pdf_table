@@ -44,7 +44,7 @@ def find_lines(blocks):
 
                 line['blocks'].append(block)
                 break
-        # block was not on any known line
+        #block was not on any known line
         else:
             line = {'height': block.y, 'blocks':[block]}
             lines.append(line)
@@ -56,19 +56,43 @@ def find_lines(blocks):
 
 
 def find_cols(blocks):
-
     if use_fix_columns: #cols defined in conf.py
         cols = fix_columns
     else:
         cols = []
-    for block in text:
-        for x_col in cols:
-            if block.belongs_to_column(x_col):
-                x_col = update_average(x_col, len(cols) - 1, block.x)
-                break
-        else:
-            cols.append(block.x)
-    cols.sort()
+        for block in blocks:
+            for x_col in cols:
+                if block.belongs_to_column(x_col):
+                    x_col = update_average(x_col, len(cols) - 1, block.x)
+                    break
+            else:
+                cols.append(block.x)
+        cols.sort()
+        return cols
+   
+
+def assemble_table2(blocks):    
+    cols = find_cols(blocks)
+    lines = find_lines(blocks)    
+    for line in lines:
+        line['cols'] = [None]*len(cols)
+        for block in line['blocks']:
+            insert_cols(block, line['cols'], cols)
+
+    return map(lambda x: x['cols'], lines)
+
+
+def insert_cols(block, line, cols):
+    """Addresses a problem where two adjacent cells are so
+    close that the pdf recognizes only one block"""
+    print line
+    col = block.find_col(cols)
+    if col == 0:
+        line[0] = block.text.split(' ')[0] + get_name(block.text)
+    else:
+        cells = block.text.split(' ')
+        for i in range(0, len(cells)):
+            line[col + i] = replace(cells[i])
 
 
 def get_name(col):
@@ -85,10 +109,7 @@ def print_blocks(text):
     for j, x in enumerate(cols):
         print "[%i] %.01f" % (j, x)
     return len(lines), len(cols)
-    
 
-def assemble_table_2(lines):
-    pass 
 
 def empty_table(lines, cols):
     if isinstance(lines, list): lines = len(lines)
