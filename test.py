@@ -141,6 +141,13 @@ class TestPdfToTable(unittest.TestCase):
 #            print '-------'
 
         self.assertEquals(62, len(res))
+
+
+    def get_lines2(self):
+        blocks = self.blocks
+        expected = [10, 22]
+        result = map(lambda x: x['height'], find_lines(self.blocks))
+        self.assertEquals(expected, result)
    
 
 if __name__ == '__main__':

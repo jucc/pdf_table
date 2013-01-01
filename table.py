@@ -55,6 +55,22 @@ def find_lines(blocks):
     return lines[1:]
 
 
+def find_cols(blocks):
+
+    if use_fix_columns: #cols defined in conf.py
+        cols = fix_columns
+    else:
+        cols = []
+    for block in text:
+        for x_col in cols:
+            if block.belongs_to_column(x_col):
+                x_col = update_average(x_col, len(cols) - 1, block.x)
+                break
+        else:
+            cols.append(block.x)
+    cols.sort()
+
+
 def get_name(col):
     return ' '.join(col.split(' ')[1:])
 
@@ -70,6 +86,9 @@ def print_blocks(text):
         print "[%i] %.01f" % (j, x)
     return len(lines), len(cols)
     
+
+def assemble_table_2(lines):
+    pass 
 
 def empty_table(lines, cols):
     if isinstance(lines, list): lines = len(lines)
