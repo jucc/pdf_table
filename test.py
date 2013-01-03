@@ -18,16 +18,16 @@ class TestPdfToTable(unittest.TestCase):
         self.lines = [10, 22]
         self.cols = [0, 27, 54, 81]
         self.blocks = []
-        self.blocks.append(Block(0, 10, 'JU'))
+        self.blocks.append(Block(0, 10, '123 JU'))
         self.blocks.append(Block(27, 0, '10'))
-        self.blocks.append(Block(0, 0, 'RONALD'))
+        self.blocks.append(Block(0, 0, '123 RONALD'))
         self.blocks.append(Block(54, 22, 'header'))
         self.blocks.append(Block(27, 10, '9'))
         self.blocks.append(Block(54, 10, '9,5 10'))
         self.blocks.append(Block(81, 0, '10'))
   
-        self.line_ju = ['JU', None, None, None, None, None, None, 11.0, 17.0, 15.5]
-        self.line_ron = ['RONALD', None, None, None, None, None, 18.0, 17.0, None, 16.0]
+        self.line_ju = ['123 JU', None, None, None, None, None, None, 11.0, 17.0, 15.5]
+        self.line_ron = ['123 RONALD', None, None, None, None, None, 18.0, 17.0, None, 16.0]
 
     def test_doc_has_pages(self):
         self.assertIsNotNone(get_doc_pages(self.pdf))
@@ -55,24 +55,6 @@ class TestPdfToTable(unittest.TestCase):
         result = self.block2.find_position(self.lines, self.cols)
         self.assertEquals((0, 2), result) 
 
-    def test_find_blocks(self):
-        pages = get_doc_pages(self.pdf)
-        text = extract_text_elements(pages.next())
-        blocks = Block.strip_metadata(Block.convert_to_blocks(text))
-        pos = find_partitions(blocks)
-        self.assertEquals(63, len(pos[0]))
-        self.assertEquals(10, len(pos[1]))
-
-    def test_empty_table(self):
-        expected = [[None, None], [None, None], [None, None]]
-        result = empty_table(3, 2)
-        self.assertEquals(expected, result)
-
-    def test_empty_table_passing_list(self):
-        expected = [[None, None], [None, None], [None, None]]
-        result = empty_table(range(3), range(2))
-        self.assertEquals(expected, result)
-
     def test_get_name(self):
         col = '12345-6 JULIANA CAVALCANTI CORREA'
         result = get_name(col)
@@ -81,7 +63,7 @@ class TestPdfToTable(unittest.TestCase):
     def test_blocks_to_lines(self):
         expected = [['JU', '9', '9.5', '10'], ['RONALD', '10', None, '10']]
         b = Block.strip_metadata(self.blocks)
-        result = assemble_table2(b)
+        result = assemble_table(b)
         self.assertEquals(expected, result)
 
 
