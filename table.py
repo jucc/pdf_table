@@ -11,20 +11,14 @@ def update_average(old_avg, old_len, new_value):
 
 def find_lines(blocks):
     lines = []
-    for block in blocks:
-#        sameline = [b for b in blocks if b.belongs_to_line(block.y)]
-        for line in lines:
-            if block.belongs_to_line(line['height']):
-                line['height'] = update_average(line['height'], len(line['blocks']), block.y)
-                line['blocks'].append(block)
-                break
-        #block was not on any known line
-        else:
-            line = {'height': block.y, 'blocks':[block]}
-            lines.append(line)
-
-    sort_by_height = lambda l: l['height']
-    lines.sort(key=sort_by_height, reverse=True)
+    while len(blocks) > 0:
+        cur_line = [b for b in blocks if b.belongs_to_line(blocks[0].y)]
+        dic = {'height':cur_line[0].y, 'blocks':cur_line}
+        lines.append(dic)
+        blocks = [b for b in blocks if b not in cur_line]
+        
+    sort_lines = lambda x: x['height']
+    lines.sort(key=sort_lines, reverse=True)
     #removes header
     return lines[1:]
 

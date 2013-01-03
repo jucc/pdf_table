@@ -15,7 +15,7 @@ class TestPdfToTable(unittest.TestCase):
         self.pdf = ('pdf2012/A_B.pdf')
         self.block = Block(42, 42, 'ju')
         self.block2 = Block(54, 10, '9')
-        self.lines = [10, 22]
+        self.lines = [0, 10]
         self.cols = [0, 27, 54, 81]
         self.blocks = []
         self.blocks.append(Block(0, 10, '123 JU'))
@@ -116,16 +116,10 @@ class TestPdfToTable(unittest.TestCase):
         text = extract_text_elements(pages.next())
         blocks = Block.strip_metadata(Block.convert_to_blocks(text))
         res = find_lines(blocks)
-        
-#        for i, line in enumerate(res):
-#            for block in line['blocks']:
-#                print "[%i] %s" % (i+1,  block.text)
-#            print '-------'
-
         self.assertEquals(62, len(res))
 
 
-    def get_lines_from_blocks(self):
+    def test_get_lines_from_blocks(self):
         expected = self.lines
         result = map(lambda x: x['height'], find_lines(self.blocks))
         self.assertEquals(expected, result)
